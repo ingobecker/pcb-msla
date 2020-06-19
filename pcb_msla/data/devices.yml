@@ -1,0 +1,14 @@
+devices:
+  sharp-ls055r1sx04: &2k
+    size_mm:
+      h: 120.96
+      w: 68.04
+    size_px:
+      h: 2560
+      w: 1440
+  elegoo-mars:
+    <<: *2k
+    format: cdbdlp
+  photon:
+    <<: *2k
+    format: photon
