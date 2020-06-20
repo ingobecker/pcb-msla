@@ -76,4 +76,7 @@ def test(device_cfg, start, steps, interval, test_pattern, outfile):
 
     c = Converter(device_cfg, output=outfile)
     c.load_test_input(gbr=infile)
+    c.exp_test_start = start
+    c.exp_test_samples = steps
+    c.exp_test_interval = interval
     c.exp_test()
