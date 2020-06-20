@@ -1,5 +1,6 @@
 import os
 import os.path
+import tempfile
 from importlib import resources
 from pkg_resources import resource_filename
 from pathlib import Path
@@ -15,7 +16,6 @@ class Converter(object):
     DEFAULT_OUTPUT = 'pcb.cbddlp'
     DEFAULT_EXPOSURE_TIME = 60 * 8
     PNG_OUTPUT = 'pcb.png'
-    PNG_EXP_OUTPUT_DIR = 'exp_test_pngs'
 
     EXP_TEST_START = 6 * 60
     EXP_TEST_INTERVAL = 60
@@ -30,6 +30,7 @@ class Converter(object):
         self.exp_test_start = self.EXP_TEST_START
         self.exp_test_interval = self.EXP_TEST_INTERVAL
         self.exp_test_samples = self.EXP_TEST_SAMPLES
+        self.exp_test_tmp_dir = None
 
         self.exposure_time = self.DEFAULT_EXPOSURE_TIME
 
@@ -58,7 +59,7 @@ class Converter(object):
         return self.PNG_OUTPUT
 
     def _exp_test_png_path(self, step):
-        return "{}/{:05d}_{:02d}.png".format(self.PNG_EXP_OUTPUT_DIR, step, 0)
+        return "{}/{:05d}_{:02d}.png".format(self.exp_test_tmp_dir, step, 0)
 
     def _render_payload_surface(self):
         self.payload_ctx.render_layer(self.traces_layer, settings=self.black, bgsettings=self.white)
@@ -94,7 +95,6 @@ class Converter(object):
     def _render_exp_test_surface(self):
         self._prepare_output_surface()
         step_reversed = self.exp_test_samples
-        Path(self.PNG_EXP_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
         for i in range(self.exp_test_samples):
              offset_y = self.payload_ctx.size_in_pixels[1] * i
              self.ic.set_source_surface(self.payload_ctx.surface, 0, offset_y)
@@ -105,12 +105,14 @@ class Converter(object):
 
     def exp_test(self):
         self._render_payload_surface()
-        self._render_exp_test_surface()
-        p = Photon()
-        p.bottom_layers = 1
-        p.exposure_time_bottom = self.exp_test_start
-        p.exposure_time = self.exp_test_interval
-        p.delete_layers()
-        p.append_layers(self.PNG_EXP_OUTPUT_DIR)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            self.exp_test_tmp_dir = tmp_dir
+            self._render_exp_test_surface()
+            p = Photon()
+            p.bottom_layers = 1
+            p.exposure_time_bottom = self.exp_test_start
+            p.exposure_time = self.exp_test_interval
+            p.delete_layers()
+            p.append_layers(self.exp_test_tmp_dir)
  
         p.write(self.output)
