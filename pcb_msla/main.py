@@ -4,6 +4,7 @@ import click
 import yaml
 
 from pcb_msla import Converter
+from pcb_msla import GCode
 
 @click.group()
 @click.option('-d', '--device',
@@ -41,6 +42,41 @@ def convert(device_cfg, exposure, infile, outfile):
     c.load_input(gbr=infile)
     c.exposure_time = exposure
     c.render()
+
+@cli.command()
+@click.argument('offset')
+@click.pass_obj
+def gcode(device_cfg, offset):
+    """Generate g-code configs for PCB exposure.
+
+    Use this command to generate g-code files which make your printer
+    behave more suitable for PCB exposure. It disables the normal peeling motion
+    and respects your PCBs thickness as well as the thickness of the padding
+    material.
+
+    To determine the OFFSET, extend the homing sensor by taping a piece of paper
+    of a length of around 15 mm to it. Select the printers menu for manual
+    positioning and home the printer. The buildplate should stop around 15 mm
+    higher than normaly. Put your PCB and the padding material under the
+    buildplate and lower the buildplate in increments of 1 mm until the PCB
+    can't be moved by hand easily. This number is the offset needed by
+    this command.
+
+    ¡WARNING!
+
+    DO THIS AT YOUR OWN RISK. MAKE SURE THE PIECE OF PAPER DOES NOT
+    FALL OFF. OTHERWISE THE PRINTER MIGHT CRUSH YOUR PRINTERS DISPLAY!
+
+    Generated files:
+
+    setup.gcode - Enable "PCB mode".
+
+    cleanup.gcode -  Disable "PCB mode" and restore the printers nomal
+    operation.
+    """
+    print("Creating g-code files...")
+    gcode = GCode(offset)
+    gcode.render()
 
 @cli.command()
 @click.option('--start',
