@@ -42,6 +42,8 @@ def convert(device_cfg, exposure, infile, outfile):
     c.load_input(gbr=infile)
     c.exposure_time = exposure
     c.render()
+    print("Creating {}...".format(outfile))
+    print("PCB dimensions: {} x {} mm".format(c.pcb_width, c.pcb_height))
 
 @cli.command()
 @click.argument('offset')
@@ -116,3 +118,6 @@ def test(device_cfg, start, steps, interval, test_pattern, outfile):
     c.exp_test_samples = steps
     c.exp_test_interval = interval
     c.exp_test()
+
+    print("Creating {}...".format(outfile))
+    print("PCB dimensions: {} x {} mm".format(c.pcb_width, c.pcb_height))

@@ -91,6 +91,9 @@ class Converter(object):
         self._render_payload_surface()
         self._render_output_surface()
         self._render_output_photon()
+        w = self.payload_ctx.size_in_pixels[1]
+        h = self.payload_ctx.size_in_pixels[0]
+        self._pcb_size_from_px(w, h)
 
     def _render_exp_test_surface(self):
         self._prepare_output_surface()
@@ -116,3 +119,10 @@ class Converter(object):
             p.append_layers(self.exp_test_tmp_dir)
  
             p.write(self.output)
+        w = self.payload_ctx.size_in_pixels[1] * self.exp_test_samples
+        h = self.payload_ctx.size_in_pixels[0]
+        self._pcb_size_from_px(w, h)
+
+    def _pcb_size_from_px(self, w, h):
+        self.pcb_width = round(w / self.scale, 2)
+        self.pcb_height = round(h / self.scale, 2)
