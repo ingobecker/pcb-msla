@@ -73,7 +73,7 @@ def gcode(device_cfg, offset):
 
     setup.gcode - Enable "PCB mode".
 
-    cleanup.gcode -  Disable "PCB mode" and restore the printers nomal
+    cleanup.gcode -  Disable "PCB mode" and restore the printers normal
     operation.
     """
     print("Creating g-code files...")
