@@ -1,6 +1,6 @@
 # pcb-msla
 
-Expose PCBs on your Elegoo Mars, Anycubic photon or any compatible 3D printer using standard gerber files. `pcb-msla` can convert standard `.gerber` files into `.cbddlp`/`.photon` files. 
+Expose PCBs on your Elegoo Mars, Anycubic photon or any compatible 3D printer using standard gerber files. `pcb-msla` can convert standard `.gbr`/`.drl` files into `.cbddlp`/`.photon` files. 
 
 It also features an exposure series function which helps to determine the correct exposure time for your 3D printer in a single pass.
 
