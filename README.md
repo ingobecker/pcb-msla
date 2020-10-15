@@ -77,3 +77,11 @@ exposure time of 9 minutes:
 ```
 $ pcb-msla convert -e 540 input.gbr output.cbddlp
 ```
+
+## Blank?
+
+Every generated `<OUTPUT_NAME>.cbddlp`-File is accompanied by a file ending
+with `<OUTPUT_NAME>_blank.cdbdlp`. This file will expose an area with the size
+of the bounding box of the actual PCB. It is useful to expose the remaining
+photoresist on the traces after the etching process and removing it by giving
+the PCB another bath in the developer.
