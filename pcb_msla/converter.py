@@ -43,6 +43,19 @@ class Converter(object):
         self.payload_ctx = GerberCairoContext(scale=self.scale)
         self.white = RenderSettings(color=theme.COLORS['white'])
         self.black = RenderSettings(color=theme.COLORS['black'])
+        self.pcb_width = None
+        self.pcb_height = None
+
+    @property
+    def pcb_width_mm(self):
+        return self._px_to_mm(self.pcb_width)
+
+    @property
+    def pcb_height_mm(self):
+        return self._px_to_mm(self.pcb_height)
+
+    def _px_to_mm(self, px):
+        return round(px / self.scale, 2)
 
     def load_test_input(self, gbr):
         if gbr == None:
@@ -91,9 +104,18 @@ class Converter(object):
         self._render_payload_surface()
         self._render_output_surface()
         self._render_output_photon()
-        w = self.payload_ctx.size_in_pixels[1]
-        h = self.payload_ctx.size_in_pixels[0]
-        self._pcb_size_from_px(w, h)
+        self.pcb_width = self.payload_ctx.size_in_pixels[0]
+        self.pcb_height = self.payload_ctx.size_in_pixels[1]
+
+    def render_blank(self):
+        self._prepare_output_surface()
+        self.ic.set_source_rgb(1.0, 1.0, 1.0)
+        self.ic.rectangle(0, 0, self.pcb_width, self.pcb_height)
+        self.ic.fill()
+        self.ims.write_to_png(self._output_png_path())
+        output_split = os.path.splitext(self.output)
+        self.output = "{}_blank{}".format(output_split[0], output_split[1])
+        self._render_output_photon()
 
     def _render_exp_test_surface(self):
         self._prepare_output_surface()
@@ -119,10 +141,7 @@ class Converter(object):
             p.append_layers(self.exp_test_tmp_dir)
  
             p.write(self.output)
-        w = self.payload_ctx.size_in_pixels[1] * self.exp_test_samples
-        h = self.payload_ctx.size_in_pixels[0]
-        self._pcb_size_from_px(w, h)
-
-    def _pcb_size_from_px(self, w, h):
-        self.pcb_width = round(w / self.scale, 2)
-        self.pcb_height = round(h / self.scale, 2)
+        self.pcb_width = self.payload_ctx.size_in_pixels[0]
+        self.pcb_height = self.payload_ctx.size_in_pixels[1] * self.exp_test_samples
+        self.exposure_time = self.exp_test_start + (self.exp_test_samples *
+                self.exp_test_interval)

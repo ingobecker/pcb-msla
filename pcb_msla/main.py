@@ -43,7 +43,8 @@ def convert(device_cfg, exposure, infile, outfile):
     c.exposure_time = exposure
     c.render()
     print("Creating {}...".format(outfile))
-    print("PCB dimensions: {} x {} mm".format(c.pcb_width, c.pcb_height))
+    print("PCB dimensions: {} x {} mm".format(c.pcb_width_mm, c.pcb_height_mm))
+    c.render_blank()
 
 @cli.command()
 @click.argument('offset')
@@ -120,4 +121,5 @@ def test(device_cfg, start, steps, interval, test_pattern, outfile):
     c.exp_test()
 
     print("Creating {}...".format(outfile))
-    print("PCB dimensions: {} x {} mm".format(c.pcb_width, c.pcb_height))
+    print("PCB dimensions: {} x {} mm".format(c.pcb_width_mm, c.pcb_height_mm))
+    c.render_blank()
