@@ -46,6 +46,11 @@ class Converter(object):
         self.pcb_width = None
         self.pcb_height = None
 
+        self.photon_template = None
+        if device_cfg['photon_template'] != 'built-in':
+            tpl_path = 'data/{}'.format(device_cfg['photon_template'])
+            self.photon_template = resource_filename('pcb_msla', tpl_path)
+
     @property
     def pcb_width_mm(self):
         return self._px_to_mm(self.pcb_width)
@@ -93,7 +98,7 @@ class Converter(object):
         self.ims.write_to_png(self._output_png_path())
 
     def _render_output_photon(self):
-        p = Photon()
+        p = Photon(self.photon_template)
         p.bottom_layers = 1
         p.exposure_time_bottom = self.exposure_time
         p.delete_layers()
@@ -133,7 +138,7 @@ class Converter(object):
         with tempfile.TemporaryDirectory() as tmp_dir:
             self.exp_test_tmp_dir = tmp_dir
             self._render_exp_test_surface()
-            p = Photon()
+            p = Photon(self.photon_template)
             p.bottom_layers = 1
             p.exposure_time_bottom = self.exp_test_start
             p.exposure_time = self.exp_test_interval

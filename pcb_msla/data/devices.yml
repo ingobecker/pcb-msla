@@ -9,6 +9,8 @@ devices:
   elegoo-mars:
     <<: *2k
     format: cdbdlp
+    photon_template: elegoo_mars.cbddlp
   photon:
     <<: *2k
     format: photon
+    photon_template: built-in
